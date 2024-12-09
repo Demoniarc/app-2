@@ -24,17 +24,16 @@ const metrics = [
   { name: "Utilisateurs Discord", key: "discord_user", color: "grey" },
   { name: "Messages Telegram", key: "telegram_message", color: "brown" },
   { name: "Utilisateurs Telegram", key: "telegram_user", color: "aqua" },
-  { name: "Commits GitHub", key: "github_commit", color: "orange" },
-  { name: "Développeurs GitHub", key: "github_developer", color: "purple" },
   { name: "Prix d'ouverture", key: "opening_price", color: "lime" },
   { name: "Prix de clôture", key: "closing_price", color: "yellow" },
   { name: "Volume d'échanges", key: "trading_volume", color: "teal" },
   { name: "Rendement", key: "return", color: "pink" },
 ];
 
-async function fetchDataFromEndpoint() {
-  const endpoint =
-    "https://mopsos-ai-api.onrender.com/oceanprotocol?api-key=be514f85c4af958bd22e597377bbb11ed756bbec511c803c76b246dbf2074264";
+async function fetchDataFromEndpoint(query) {
+  const baseUrl = "https://mopsos-ai-api.onrender.com/";
+  const apiKey = "be514f85c4af958bd22e597377bbb11ed756bbec511c803c76b246dbf2074264";
+  const endpoint = `${baseUrl}${query}?api-key=${apiKey}`;
 
   try {
     const response = await fetch(endpoint);
@@ -64,7 +63,7 @@ export default function Dashboard() {
   useEffect(() => {
     async function loadData() {
       try {
-        const data = await fetchDataFromEndpoint();
+        const data = await fetchDataFromEndpoint(projectId);
         setHistoricalData(data);
       } catch (error) {
         console.error("Erreur lors du chargement des données :", error);
