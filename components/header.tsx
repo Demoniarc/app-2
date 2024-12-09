@@ -28,7 +28,7 @@ export default function Header() {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Link href="/" className="text-xl font-bold md:text-2xl">
-              CryptoSocialAnalyse
+              Mopsos AI
             </Link>
             <div className="hidden md:block">
               <SearchBar />
