@@ -18,6 +18,14 @@ export default function ApiPage() {
     }, 1000)
   }
 
+  const handleMonthsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    // Valider que l'entrée est un entier positif
+    if (/^\d*$/.test(value)) {
+      setMonths(value)
+    }
+  }
+
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">API CryptoSocialAnalyse</h1>
@@ -44,13 +52,14 @@ export default function ApiPage() {
               <Input
                 id="months"
                 type="number"
+                min="1"
                 placeholder="Entrez le nombre de mois"
                 value={months}
-                onChange={(e) => setMonths(e.target.value)}
+                onChange={handleMonthsChange}
                 required
               />
             </div>
-            <Button type="submit">Payer et obtenir la clé API</Button>
+            <Button type="submit" disabled={!months}>Payer et obtenir la clé API</Button>
           </form>
         </CardContent>
         {apiKey && (
@@ -65,4 +74,3 @@ export default function ApiPage() {
     </div>
   )
 }
-
