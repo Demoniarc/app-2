@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { MoonIcon, SunIcon, MenuIcon } from 'lucide-react'
 import { useTheme } from "next-themes"
 import { SearchBar } from "@/components/search-bar"
+import { useWallet } from "@/hooks/useWallet"
 import {
   Sheet,
   SheetContent,
@@ -13,13 +14,20 @@ import {
 } from "@/components/ui/sheet"
 
 export default function Header() {
-  const [isWalletConnected, setIsWalletConnected] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { setTheme, theme } = useTheme()
+  const { address, connectWallet, disconnectWallet, error } = useWallet()
 
-  const connectWallet = async () => {
-    // Simuler la connexion du portefeuille
-    setIsWalletConnected(true)
+  const handleWalletClick = () => {
+    if (address) {
+      disconnectWallet()
+    } else {
+      connectWallet()
+    }
+  }
+
+  const formatAddress = (address: string) => {
+    return `${address.slice(0, 6)}...${address.slice(-4)}`
   }
 
   return (
@@ -56,9 +64,15 @@ export default function Header() {
                 )}
                 <span className="sr-only">Changer de thème</span>
               </Button>
-              <Button onClick={connectWallet}>
-                {isWalletConnected ? "Connecté" : "Connecter Portefeuille"}
+              <Button 
+                onClick={handleWalletClick}
+                variant={address ? "outline" : "default"}
+              >
+                {address ? formatAddress(address) : "Connecter Portefeuille"}
               </Button>
+              {error && (
+                <p className="text-sm text-destructive">{error}</p>
+              )}
             </div>
             <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
               <SheetTrigger asChild>
@@ -93,12 +107,18 @@ export default function Header() {
                     )}
                     Changer de thème
                   </Button>
-                  <Button onClick={() => {
-                    connectWallet()
-                    setIsMenuOpen(false)
-                  }}>
-                    {isWalletConnected ? "Connecté" : "Connecter Portefeuille"}
+                  <Button 
+                    onClick={() => {
+                      handleWalletClick()
+                      setIsMenuOpen(false)
+                    }}
+                    variant={address ? "outline" : "default"}
+                  >
+                    {address ? formatAddress(address) : "Connecter Portefeuille"}
                   </Button>
+                  {error && (
+                    <p className="text-sm text-destructive">{error}</p>
+                  )}
                 </div>
               </SheetContent>
             </Sheet>
@@ -108,4 +128,3 @@ export default function Header() {
     </header>
   )
 }
-
