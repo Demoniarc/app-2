@@ -18,16 +18,16 @@ import {
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
 const metrics = [
-  { name: "Posts Twitter", key: "twitter_post", color: "red" },
-  { name: "Utilisateurs Twitter", key: "twitter_user", color: "blue" },
-  { name: "Messages Discord", key: "discord_message", color: "green" },
-  { name: "Utilisateurs Discord", key: "discord_user", color: "grey" },
-  { name: "Messages Telegram", key: "telegram_message", color: "brown" },
-  { name: "Utilisateurs Telegram", key: "telegram_user", color: "aqua" },
-  { name: "Prix d'ouverture", key: "opening_price", color: "lime" },
-  { name: "Prix de clôture", key: "closing_price", color: "yellow" },
-  { name: "Volume d'échanges", key: "trading_volume", color: "teal" },
-  { name: "Rendement", key: "return", color: "pink" },
+  { name: "Twitter Post", key: "twitter_post", color: "red" },
+  { name: "Twitter User", key: "twitter_user", color: "blue" },
+  { name: "Discord Message", key: "discord_message", color: "green" },
+  { name: "Discord User", key: "discord_user", color: "grey" },
+  { name: "Telegram Message", key: "telegram_message", color: "brown" },
+  { name: "Telegram user", key: "telegram_user", color: "aqua" },
+  { name: "Opening Price", key: "opening_price", color: "lime" },
+  { name: "Closing Price", key: "closing_price", color: "yellow" },
+  { name: "Trading Volume", key: "trading_volume", color: "teal" },
+  { name: "Return", key: "return", color: "pink" },
 ];
 
 async function fetchDataFromEndpoint(query) {
@@ -43,7 +43,7 @@ async function fetchDataFromEndpoint(query) {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Erreur lors de la récupération des données :", error);
+    console.error("Error during data recovery :", error);
     throw error;
   }
 }
@@ -66,7 +66,7 @@ export default function Dashboard() {
         const data = await fetchDataFromEndpoint(projectId);
         setHistoricalData(data);
       } catch (error) {
-        console.error("Erreur lors du chargement des données :", error);
+        console.error("Error while loading data :", error);
       } finally {
         setLoading(false);
       }
@@ -76,11 +76,11 @@ export default function Dashboard() {
   }, []);
 
   if (loading) {
-    return <p>Chargement des données...</p>;
+    return <p>Loading data...</p>;
   }
 
   if (!historicalData.length) {
-    return <p>Aucune donnée disponible.</p>;
+    return <p>No data available.</p>;
   }
 
   const currentData = historicalData[historicalData.length - 1];
@@ -96,11 +96,11 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl md:text-3xl font-bold capitalize">{projectId} Tableau de bord</h1>
+      <h1 className="text-2xl md:text-3xl font-bold capitalize">{projectId} dashboard</h1>
 
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>Données historiques</CardTitle>
+          <CardTitle>Historical data</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="mb-4 flex flex-wrap gap-4">
@@ -169,7 +169,7 @@ export default function Dashboard() {
               </div>
               <p className="text-xs text-muted-foreground">
                 {calculateChange(currentData[metric.key], previousData[metric.key])}
-                % par rapport au jour précédent
+                % from the previous day
               </p>
             </CardContent>
           </Card>
