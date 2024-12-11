@@ -48,39 +48,39 @@ export default function ApiPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">API CryptoSocialAnalyse</h1>
+      <h1 className="text-3xl font-bold">Mopsos AI API</h1>
       
       <Card>
         <CardHeader>
-          <CardTitle>Documentation de l'API</CardTitle>
-          <CardDescription>Accédez à notre documentation complète pour intégrer l'API CryptoSocialAnalyse.</CardDescription>
+          <CardTitle>API Documentation</CardTitle>
+          <CardDescription>Access our comprehensive documentation for integrating the Mopsos AI API.</CardDescription>
         </CardHeader>
         <CardFooter>
-          <Button as="a" href="/api-docs" target="_blank">Voir la Documentation</Button>
+          <Button as="a" href="/api-docs" target="_blank">See the documentation</Button>
         </CardFooter>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Abonnement à l'API</CardTitle>
-          <CardDescription>Choisissez la durée de votre abonnement et obtenez votre clé API.</CardDescription>
+          <CardTitle>API Subscription</CardTitle>
+          <CardDescription>Choose the duration of your subscription and get your API key.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="months">Nombre de mois d'abonnement</Label>
+              <Label htmlFor="months">Number of subscription months</Label>
               <Input
                 id="months"
                 type="number"
                 min="1"
-                placeholder="Entrez le nombre de mois"
+                placeholder="Enter number of months"
                 value={months}
                 onChange={handleMonthsChange}
                 required
               />
               {months && !loading && (
                 <p className="text-sm text-muted-foreground">
-                  Prix total: {totalPrice} MATIC
+                  Total price: {totalPrice} MATIC
                 </p>
               )}
             </div>
@@ -89,10 +89,10 @@ export default function ApiPage() {
               disabled={!months || isProcessing || loading}
             >
               {!address 
-                ? "Connecter le portefeuille" 
+                ? "Connect wallet" 
                 : isProcessing 
-                  ? "Transaction en cours..." 
-                  : "Payer et obtenir la clé API"}
+                  ? "Transaction pending..." 
+                  : "Pay and get your API key"}
             </Button>
             {error && (
               <p className="text-sm text-destructive">{error}</p>
@@ -102,7 +102,7 @@ export default function ApiPage() {
         {apiKey && (
           <CardFooter>
             <div className="w-full">
-              <h3 className="font-semibold mb-2">Votre clé API :</h3>
+              <h3 className="font-semibold mb-2">Your API key :</h3>
               <code className="bg-secondary p-2 rounded block w-full break-all">{apiKey}</code>
             </div>
           </CardFooter>
