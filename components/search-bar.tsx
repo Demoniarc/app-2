@@ -54,17 +54,17 @@ export function SearchBar() {
         )}
         onClick={() => setOpen(true)}
       >
-        <span className="hidden lg:inline-flex">Rechercher un dashboard...</span>
-        <span className="inline-flex lg:hidden">Rechercher...</span>
+        <span className="hidden lg:inline-flex">Search a coin...</span>
+        <span className="inline-flex lg:hidden">Search...</span>
         <kbd className="pointer-events-none absolute right-1.5 top-1.5 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
           <span className="text-xs">⌘</span>K
         </kbd>
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Rechercher un dashboard..." />
+        <CommandInput placeholder="Search a coin..." />
         <CommandList>
-          <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
-          <CommandGroup heading="Dashboards">
+          <CommandEmpty>No result found.</CommandEmpty>
+          <CommandGroup heading="Coins">
             {projects.map((project) => (
               <CommandItem
                 key={project.id}

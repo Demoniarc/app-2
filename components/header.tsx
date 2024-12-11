@@ -62,13 +62,13 @@ export default function Header() {
                 ) : (
                   <MoonIcon className="h-5 w-5" />
                 )}
-                <span className="sr-only">Changer de thème</span>
+                <span className="sr-only">Switch theme</span>
               </Button>
               <Button 
                 onClick={handleWalletClick}
                 variant={address ? "outline" : "default"}
               >
-                {address ? formatAddress(address) : "Connecter Portefeuille"}
+                {address ? formatAddress(address) : "Connect Wallet"}
               </Button>
               {error && (
                 <p className="text-sm text-destructive">{error}</p>
@@ -105,7 +105,7 @@ export default function Header() {
                     ) : (
                       <MoonIcon className="h-5 w-5 mr-2" />
                     )}
-                    Changer de thème
+                    Switch theme
                   </Button>
                   <Button 
                     onClick={() => {
@@ -114,7 +114,7 @@ export default function Header() {
                     }}
                     variant={address ? "outline" : "default"}
                   >
-                    {address ? formatAddress(address) : "Connecter Portefeuille"}
+                    {address ? formatAddress(address) : "Connect Wallet"}
                   </Button>
                   {error && (
                     <p className="text-sm text-destructive">{error}</p>
