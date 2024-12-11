@@ -5,26 +5,46 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
+import { useWallet } from "@/hooks/useWallet"
+import { useApiContract } from "@/hooks/useApiContract"
 
 export default function ApiPage() {
   const [months, setMonths] = useState("")
   const [apiKey, setApiKey] = useState("")
+  const [isProcessing, setIsProcessing] = useState(false)
+  
+  const { address, connectWallet } = useWallet()
+  const { price, loading, error, payForAccess } = useApiContract()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Simuler un processus de paiement
-    setTimeout(() => {
-      setApiKey(`votre_cle_api_${Math.random().toString(36).substr(2, 9)}`)
-    }, 1000)
+    
+    if (!address) {
+      await connectWallet()
+      return
+    }
+
+    setIsProcessing(true)
+    try {
+      const success = await payForAccess(Number(months))
+      if (success) {
+        setApiKey(`votre_cle_api_${Math.random().toString(36).substr(2, 9)}`)
+      }
+    } catch (err) {
+      console.error("Erreur lors du paiement:", err)
+    } finally {
+      setIsProcessing(false)
+    }
   }
 
   const handleMonthsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
-    // Valider que l'entrée est un entier positif
     if (/^\d*$/.test(value)) {
       setMonths(value)
     }
   }
+
+  const totalPrice = loading ? '...' : (Number(price) * Number(months || 0)).toFixed(2)
 
   return (
     <div className="space-y-6">
@@ -58,8 +78,25 @@ export default function ApiPage() {
                 onChange={handleMonthsChange}
                 required
               />
+              {months && !loading && (
+                <p className="text-sm text-muted-foreground">
+                  Prix total: {totalPrice} MATIC
+                </p>
+              )}
             </div>
-            <Button type="submit" disabled={!months}>Payer et obtenir la clé API</Button>
+            <Button 
+              type="submit" 
+              disabled={!months || isProcessing || loading}
+            >
+              {!address 
+                ? "Connecter le portefeuille" 
+                : isProcessing 
+                  ? "Transaction en cours..." 
+                  : "Payer et obtenir la clé API"}
+            </Button>
+            {error && (
+              <p className="text-sm text-destructive">{error}</p>
+            )}
           </form>
         </CardContent>
         {apiKey && (
