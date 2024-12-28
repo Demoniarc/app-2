@@ -7,14 +7,15 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from "@/components/ui/label"
 import { useWallet } from "@/hooks/useWallet"
 import { useApiContract } from "@/hooks/useApiContract"
+import { useApiKey } from "@/hooks/useApiKey"
 
 export default function ApiPage() {
   const [months, setMonths] = useState("")
-  const [apiKey, setApiKey] = useState("")
   const [isProcessing, setIsProcessing] = useState(false)
   
   const { address, connectWallet } = useWallet()
-  const { price, loading, error, payForAccess } = useApiContract()
+  const { price, loading: contractLoading, error: contractError, payForAccess } = useApiContract()
+  const { apiKey, loading: apiKeyLoading, error: apiKeyError, retryFetchApiKey } = useApiKey(address)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -28,10 +29,11 @@ export default function ApiPage() {
     try {
       const success = await payForAccess(Number(months))
       if (success) {
-        setApiKey(`votre_cle_api_${Math.random().toString(36).substr(2, 9)}`)
+        // After successful payment, retry fetching the API key multiple times
+        await retryFetchApiKey(address)
       }
     } catch (err) {
-      console.error("Erreur lors du paiement:", err)
+      console.error("Error during payment:", err)
     } finally {
       setIsProcessing(false)
     }
@@ -44,7 +46,7 @@ export default function ApiPage() {
     }
   }
 
-  const totalPrice = loading ? '...' : (Number(price) * Number(months || 0)).toFixed(2)
+  const totalPrice = contractLoading ? '...' : (Number(price) * Number(months || 0)).toFixed(2)
 
   return (
     <div className="space-y-6">
@@ -78,7 +80,7 @@ export default function ApiPage() {
                 onChange={handleMonthsChange}
                 required
               />
-              {months && !loading && (
+              {months && !contractLoading && (
                 <p className="text-sm text-muted-foreground">
                   Total price: {totalPrice} MATIC
                 </p>
@@ -86,7 +88,7 @@ export default function ApiPage() {
             </div>
             <Button 
               type="submit" 
-              disabled={!months || isProcessing || loading}
+              disabled={!months || isProcessing || contractLoading || apiKeyLoading}
             >
               {!address 
                 ? "Connect wallet" 
@@ -94,15 +96,15 @@ export default function ApiPage() {
                   ? "Transaction pending..." 
                   : "Pay and get your API key"}
             </Button>
-            {error && (
-              <p className="text-sm text-destructive">{error}</p>
+            {(contractError || apiKeyError) && (
+              <p className="text-sm text-destructive">{contractError || apiKeyError}</p>
             )}
           </form>
         </CardContent>
-        {apiKey && (
+        {address && apiKey && (
           <CardFooter>
             <div className="w-full">
-              <h3 className="font-semibold mb-2">Your API key :</h3>
+              <h3 className="font-semibold mb-2">Your API key:</h3>
               <code className="bg-secondary p-2 rounded block w-full break-all">{apiKey}</code>
             </div>
           </CardFooter>
