@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useParams } from "next/navigation"; // Ensure you are using the Next.js useParams hook
+import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import {
   LineChart,
   Line,
@@ -28,6 +29,13 @@ const metrics = [
   { name: "Closing Price", key: "closing_price", color: "yellow" },
   { name: "Trading Volume", key: "trading_volume", color: "teal" },
   { name: "Return", key: "return", color: "pink" },
+];
+
+const timeRanges = [
+  { label: "30d", days: 30 },
+  { label: "90d", days: 90 },
+  { label: "1y", days: 365 },
+  { label: "All", days: null },
 ];
 
 async function fetchDataFromEndpoint(query) {
@@ -55,10 +63,12 @@ function calculateChange(current: number, previous: number) {
 }
 
 export default function Dashboard() {
-  const { projectId } = useParams(); // Use useParams() to access the projectId
+  const { projectId } = useParams();
   const [historicalData, setHistoricalData] = useState([]);
   const [selectedMetrics, setSelectedMetrics] = useState(metrics.slice(0, 3).map((m) => m.key));
   const [loading, setLoading] = useState(true);
+  const [selectedRange, setSelectedRange] = useState("30d");
+  const [filteredData, setFilteredData] = useState([]);
 
   useEffect(() => {
     async function loadData() {
@@ -74,6 +84,26 @@ export default function Dashboard() {
 
     loadData();
   }, []);
+
+  useEffect(() => {
+    if (!historicalData.length) return;
+
+    const range = timeRanges.find(r => r.label === selectedRange);
+    if (!range?.days) {
+      setFilteredData(historicalData);
+      return;
+    }
+
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - range.days);
+
+    const filtered = historicalData.filter(item => {
+      const itemDate = new Date(item.date);
+      return itemDate >= cutoffDate;
+    });
+
+    setFilteredData(filtered);
+  }, [historicalData, selectedRange]);
 
   if (loading) {
     return <p>Loading data...</p>;
@@ -101,6 +131,18 @@ export default function Dashboard() {
       <Card className="w-full">
         <CardHeader>
           <CardTitle>Historical data</CardTitle>
+          <div className="flex flex-wrap gap-2 mt-4">
+            {timeRanges.map((range) => (
+              <Button
+                key={range.label}
+                variant={selectedRange === range.label ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedRange(range.label)}
+              >
+                {range.label}
+              </Button>
+            ))}
+          </div>
         </CardHeader>
         <CardContent>
           <div className="mb-4 flex flex-wrap gap-4">
@@ -129,7 +171,7 @@ export default function Dashboard() {
           >
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
-                data={historicalData}
+                data={filteredData}
                 margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
